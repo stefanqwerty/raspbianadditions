@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html> 
+
+<head> 
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>index</title>
+<meta http-equiv="imagetoolbar" content="false">
+<link rel="stylesheet" type="text/css" href="./css/index-maina.css" >
+<script src="jquery.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+	$(function () {
+	  $("#btn1").click(function () {
+		// apeleaza /home/stefan/livolo/livolo;
+		document.body.style.background = "red";
+		$.ajax({
+		    url : 'run.php',
+		    success: function(data) {
+				    console.log("OK");
+				    console.log(data);
+				},
+		    error: function(data) {
+				    console.log("KO");
+				    console.log(data);
+				}
+		    });
+	  });
+	});
+
+	$(function () {
+	  $("#btn2").click(function () {
+		// apeleaza livolo 8;
+		document.body.style.background = "white";
+	  });
+	});
+
+</script>
+</head> 
+
+<body>
+
+<div id="centered">
+
+    <div id="btn1">
+        <img src="./geometry/on.png"/>
+    </div>
+
+    <div id="btn2">
+        <img src="./geometry/off.png"/>
+    </div>
+
+</div>
+</body> 
+</html> 
