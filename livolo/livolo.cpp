@@ -33,22 +33,24 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include "livolo.h"
+#include <fstream>
+#include <ctime>
 
 #define REPEATS 100
 
 // Global Variables
 //
-unsigned int group = 23783;							// The 23783 is the group value of my little switch (bit 0-15)
+unsigned int group = 19303;							// The 23783 is the group value of my little switch (bit 0-15)
 unsigned char device = 16;							// Key A is number 8, B16 (bit 16-22, with bit 19=1)
 unsigned int loops = 1;
 unsigned int repeats = REPEATS;
 bool inverted = false;
-unsigned char output_pin = 7;						// wiringPi PIN number
+unsigned char output_pin = 15;						// wiringPi PIN number
 
 int fflg = 0;										// Fake flag, for debugging. Init to false. If true, print values only
 
 // I found the timing parameters below to be VERY VERY critical
-// Only a few uSecs extra will make the switch fail.
+// Only a few uSecs extra will make the switch fail
 //
 int p_short = 110;									// 110 works quite OK
 int p_long = 290;									// 300 works quite OK
@@ -56,6 +58,7 @@ int p_start = 520;									// 520 works quite OK
 
 Livolo::Livolo(unsigned char pin)
 {
+  printf("Starting with pin:%u",pin);
   pinMode(pin, OUTPUT);
   txPin = pin;
 }
@@ -235,8 +238,15 @@ void Livolo::sendPulse(unsigned char txPulse) {
 //
 //
 
+using namespace std;
+
 int main(int argc, char **argv)
 {
+  //ofstream fout ("livolo.log", ios_base::app);
+  //time_t t = time(0);
+  //tm*now = localtime(&t);
+  //fout << (now->tm_year + 1900) << '-' << (now->tm_mon + 1) << '-' << now->tm_mday << ' ' << now-> tm_hour << ':' << now->tm_min << ':' << now->tm_sec << "\n";
+  
   int cflg, tflg, dflg, iflg, lflg, kflg, pflg;
   int verbose=0;
   fflg = 0;
@@ -246,8 +256,6 @@ int main(int argc, char **argv)
   
   if (wiringPiSetup () == -1)
 		exit (1) ;
-
-  Livolo liv(output_pin);
 
    // Sort out the options first!
    //
@@ -339,8 +347,10 @@ int main(int argc, char **argv)
 		printf("-l\tp_long : %d\n",p_long);
 		
 		printf("\n");
-	}
-	
+	}  
+
+  Livolo liv(output_pin);
+
   // 
   // Main LOOP
   //
