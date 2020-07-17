@@ -1,0 +1,55 @@
+#!/bin/bash
+FILE=/home/stefan/home_automation/old_ip
+ping_file=/home/stefan/home_automation/ping.txt
+
+current_ip=$(curl -s ifconfig.me)
+uptime=$(uptime)
+date=$(date)
+
+raspberry_IP=192.168.0.12
+
+if [ -f "$FILE" ]; then
+     old_ip=$(<$FILE)
+else
+     old_ip="0.0.0.0"
+fi
+
+function send_mail {
+    echo "subject: IP Address" > msg.txt
+    echo $current_ip >> msg.txt
+    echo $uptime >> msg.txt
+    echo $date >> msg.txt
+    echo "$current_ip:4280" >> msg.txt
+
+    if [ "$current_ip" != "$old_ip" ]; then
+	echo "The IP has changed" >> msg.txt
+    fi
+
+    curl --ssl-reqd \
+    --url 'smtps://smtp.gmail.com:465' \
+    --user 'rubusidaeus31415@gmail.com:dani1024' \
+    --mail-rcpt	'vanghelicescu@gmail.com' \
+    --mail-rcpt 'stefan.vanghelicescu@gmail.com' \
+    --mail-rcpt 'georgeta.vanghelicescu@gmail.com' \
+    --upload-file msg.txt
+}
+
+if [ "$current_ip" != "$old_ip" ]; then
+    send_mail
+    echo $current_ip>$FILE
+fi
+
+if [ "$1" == "mail_zilnic" ]; then
+    send_mail
+fi
+
+#    if [ ping -c 1 -W 1 "$raspberry_ip" ]; then
+#	echo "correct" > $ping_file
+#   else
+#	status=$(<$ping_file)
+#        if [ "$status"=="correct" ]; then
+#	    $status="error"
+#	    echo "error" > $ping_file
+#	    echo "Raspberry 12 down" >> msg.txt
+#	fi
+#    fi
